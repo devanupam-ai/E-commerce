@@ -1,0 +1,145 @@
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F3F4F6; color: #111; transition: background 0.3s, color 0.3s; }
+button { cursor: pointer; border: none; border-radius: 8px; font-size: 14px; }
+input { font-size: 14px; }
+
+.btn-primary { background: #6C3CE1; color: #fff; padding: 10px 20px; font-weight: 600; }
+.btn-primary:hover { background: #5a2fcf; }
+.btn-secondary { background: #E5E7EB; color: #374151; padding: 8px 16px; }
+.btn-danger { background: #DC2626; color: #fff; padding: 8px 16px; font-weight: 600; }
+.btn-success { background: #059669; color: #fff; padding: 8px 16px; font-weight: 600; }
+.btn-warning { background: #F59E0B; color: #fff; padding: 8px 16px; font-weight: 600; }
+
+.card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); transition: background 0.3s, box-shadow 0.3s; }
+.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+}
+
+.status-PLACED { background: #FEF3C7; color: #D97706; }
+.status-CONFIRMED { background: #DBEAFE; color: #2563EB; }
+.status-ASSIGNED { background: #EDE9FE; color: #7C3AED; }
+.status-PICKED_UP { background: #FFEDD5; color: #EA580C; }
+.status-OUT_FOR_DELIVERY { background: #CFFAFE; color: #0891B2; }
+.status-DELIVERED { background: #D1FAE5; color: #059669; }
+.status-CANCELLED { background: #FEE2E2; color: #DC2626; }
+
+/* ==================== DARK MODE ==================== */
+body.dark { background: #0F172A; color: #E2E8F0; }
+body.dark .card { background: #1E293B; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+body.dark .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+body.dark .btn-secondary { background: #334155; color: #E2E8F0; }
+body.dark input, body.dark select, body.dark textarea {
+  background: #1E293B; color: #E2E8F0; border: 1px solid #475569;
+}
+body.dark table { color: #E2E8F0; }
+body.dark th { color: #94A3B8 !important; }
+body.dark td { border-color: #334155 !important; }
+
+/* ==================== HEATMAP CALENDAR ==================== */
+.heatmap-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+}
+.heatmap-cell {
+  aspect-ratio: 1; border-radius: 4px; display: flex; align-items: center;
+  justify-content: center; font-size: 11px; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s; position: relative;
+}
+.heatmap-cell:hover { transform: scale(1.15); box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1; }
+.heatmap-cell .tooltip {
+  display: none; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
+  background: #1E293B; color: #fff; padding: 4px 8px; border-radius: 6px;
+  font-size: 11px; white-space: nowrap; z-index: 10;
+}
+.heatmap-cell:hover .tooltip { display: block; }
+
+/* ==================== CASH FLOW TIMELINE ==================== */
+.timeline-item {
+  display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid #F3F4F6;
+  position: relative;
+}
+body.dark .timeline-item { border-color: #334155; }
+.timeline-dot {
+  width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; flex-shrink: 0;
+}
+.timeline-line {
+  position: absolute; left: 5px; top: 20px; bottom: -12px; width: 2px; background: #E5E7EB;
+}
+body.dark .timeline-line { background: #475569; }
+
+/* ==================== NOTIFICATION CENTER ==================== */
+.notif-item {
+  display: flex; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #F3F4F6;
+  cursor: pointer; transition: background 0.15s;
+}
+.notif-item:hover { background: #F8FAFC; }
+body.dark .notif-item:hover { background: #334155; }
+.notif-item.unread { background: #EEF2FF; border-left: 3px solid #6C3CE1; }
+body.dark .notif-item.unread { background: #1E1B4B; }
+.notif-badge {
+  position: absolute; top: -4px; right: -4px; background: #DC2626; color: #fff;
+  font-size: 10px; font-weight: 700; min-width: 18px; height: 18px;
+  border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+}
+
+/* ==================== BUSINESS CARD ==================== */
+.biz-card {
+  width: 400px; max-width: 100%; border-radius: 16px; padding: 28px;
+  position: relative; overflow: hidden; color: #fff; min-height: 220px;
+}
+.biz-card::before {
+  content: ''; position: absolute; top: -50%; right: -50%;
+  width: 200%; height: 200%; background: rgba(255,255,255,0.05);
+  transform: rotate(45deg); border-radius: 50%;
+}
+.biz-card.classic { border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); }
+.biz-card.minimal { background: #fff !important; color: #111 !important; border: 1px solid #E5E7EB; }
+.biz-card.bold { border-radius: 24px; padding: 32px; }
+
+/* ==================== DRAG & DROP ==================== */
+.widget-card {
+  border: 2px dashed transparent; border-radius: 12px; padding: 16px;
+  cursor: grab; transition: border-color 0.2s, opacity 0.2s;
+}
+.widget-card.dragging { opacity: 0.5; border-color: #6C3CE1; }
+.widget-card.drag-over { border-color: #10B981; background: #F0FDF4; }
+body.dark .widget-card.drag-over { background: #064E3B; }
+
+/* ==================== INSIGHT CARDS ==================== */
+.insight-card {
+  border-radius: 12px; padding: 20px; border-left: 4px solid;
+  transition: transform 0.2s;
+}
+.insight-card:hover { transform: translateY(-2px); }
+.insight-SUCCESS { background: #F0FDF4; border-color: #10B981; }
+.insight-WARNING { background: #FFFBEB; border-color: #F59E0B; }
+.insight-ALERT { background: #FEF2F2; border-color: #DC2626; }
+.insight-INFO { background: #EFF6FF; border-color: #3B82F6; }
+body.dark .insight-SUCCESS { background: #064E3B; }
+body.dark .insight-WARNING { background: #78350F; }
+body.dark .insight-ALERT { background: #7F1D1D; }
+body.dark .insight-INFO { background: #1E3A5F; }
+
+/* ==================== HEALTH SCORE ==================== */
+.health-ring {
+  width: 120px; height: 120px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-size: 32px; font-weight: 800;
+  position: relative;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes slideIn { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.animate-pulse { animation: pulse 2s infinite; }
+.animate-slideIn { animation: slideIn 0.3s ease-out; }
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+body.dark ::-webkit-scrollbar-thumb { background: #475569; }
+
