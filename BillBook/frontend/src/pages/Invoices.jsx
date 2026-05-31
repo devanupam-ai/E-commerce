@@ -68,7 +68,7 @@ export default function Invoices() {
   const downloadPdf = async (id, invoiceNumber) => {
     try {
       const token = localStorage.getItem('bb_token');
-      const res = await fetch(`http://localhost:9999/api/bb/invoices/${id}/pdf`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:9999'}/api/bb/invoices/${id}/pdf`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) {

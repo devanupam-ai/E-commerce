@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: 'http://localhost:9999/api/bb' });
+const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:9999'}/api/bb` });
 
 api.interceptors.request.use(cfg => {
   const token = localStorage.getItem('bb_token');
