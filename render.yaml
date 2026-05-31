@@ -18,10 +18,28 @@ services:
     dockerContext: ./backend
     plan: free
     envVars:
-      - key: SPRING_DATASOURCE_URL
+      - key: DB_HOST
         fromDatabase:
           name: ecommerce-db
-          property: connectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: ecommerce-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: ecommerce-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: ecommerce-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: ecommerce-db
+          property: password
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: ecommerce-db
@@ -49,10 +67,28 @@ services:
     dockerContext: ./billbook-backend
     plan: free
     envVars:
-      - key: SPRING_DATASOURCE_URL
+      - key: DB_HOST
         fromDatabase:
           name: billbook-db
-          property: connectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: billbook-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: billbook-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: billbook-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: billbook-db
+          property: password
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: billbook-db
