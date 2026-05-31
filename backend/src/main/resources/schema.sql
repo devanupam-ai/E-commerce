@@ -1,26 +1,24 @@
 -- =============================================
--- ECOMMERCE DATABASE SCHEMA
+-- ECOMMERCE DATABASE SCHEMA (PostgreSQL)
 -- =============================================
-CREATE DATABASE IF NOT EXISTS ecommerce;
-USE ecommerce;
 
 -- USERS TABLE
 CREATE TABLE IF NOT EXISTS users (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(15) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('CUSTOMER','ADMIN','DELIVERY_BOY') DEFAULT 'CUSTOMER',
+    role VARCHAR(20) DEFAULT 'CUSTOMER' CHECK (role IN ('CUSTOMER','ADMIN','DELIVERY_BOY')),
     is_active BOOLEAN DEFAULT TRUE,
     fcm_token VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ADDRESSES TABLE
 CREATE TABLE IF NOT EXISTS addresses (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     label VARCHAR(50),
     address_line1 VARCHAR(255) NOT NULL,
@@ -36,7 +34,7 @@ CREATE TABLE IF NOT EXISTS addresses (
 
 -- CATEGORIES TABLE
 CREATE TABLE IF NOT EXISTS categories (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     image_url VARCHAR(255),
     emoji VARCHAR(10),
@@ -46,7 +44,7 @@ CREATE TABLE IF NOT EXISTS categories (
 
 -- PRODUCTS TABLE
 CREATE TABLE IF NOT EXISTS products (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     category_id BIGINT NOT NULL,
     name VARCHAR(200) NOT NULL,
     description TEXT,
@@ -63,19 +61,19 @@ CREATE TABLE IF NOT EXISTS products (
 
 -- CART TABLE
 CREATE TABLE IF NOT EXISTS cart (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_cart_item (user_id, product_id),
+    UNIQUE (user_id, product_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 -- ORDERS TABLE
 CREATE TABLE IF NOT EXISTS orders (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     order_number VARCHAR(50) UNIQUE NOT NULL,
     customer_id BIGINT NOT NULL,
     delivery_boy_id BIGINT,
@@ -84,11 +82,11 @@ CREATE TABLE IF NOT EXISTS orders (
     delivery_charge DECIMAL(10,2) DEFAULT 0,
     discount DECIMAL(10,2) DEFAULT 0,
     total_amount DECIMAL(10,2) NOT NULL,
-    payment_type ENUM('UPI','NET_BANKING','CREDIT_CARD','COD') NOT NULL,
-    payment_status ENUM('PENDING','SUCCESS','FAILED') DEFAULT 'PENDING',
+    payment_type VARCHAR(20) NOT NULL CHECK (payment_type IN ('UPI','NET_BANKING','CREDIT_CARD','COD')),
+    payment_status VARCHAR(20) DEFAULT 'PENDING' CHECK (payment_status IN ('PENDING','SUCCESS','FAILED')),
     payment_transaction_id VARCHAR(100),
-    shipping_type ENUM('STANDARD','EXPRESS','INSTANT') DEFAULT 'STANDARD',
-    order_status ENUM('PLACED','CONFIRMED','ASSIGNED','PICKED_UP','OUT_FOR_DELIVERY','DELIVERED','CANCELLED') DEFAULT 'PLACED',
+    shipping_type VARCHAR(20) DEFAULT 'STANDARD' CHECK (shipping_type IN ('STANDARD','EXPRESS','INSTANT')),
+    order_status VARCHAR(20) DEFAULT 'PLACED' CHECK (order_status IN ('PLACED','CONFIRMED','ASSIGNED','PICKED_UP','OUT_FOR_DELIVERY','DELIVERED','CANCELLED')),
     delivery_otp VARCHAR(6),
     otp_verified BOOLEAN DEFAULT FALSE,
     notes TEXT,
@@ -96,7 +94,7 @@ CREATE TABLE IF NOT EXISTS orders (
     customer_longitude DECIMAL(11,8),
     customer_location_address VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES users(id),
     FOREIGN KEY (delivery_boy_id) REFERENCES users(id),
     FOREIGN KEY (address_id) REFERENCES addresses(id)
@@ -104,7 +102,7 @@ CREATE TABLE IF NOT EXISTS orders (
 
 -- ORDER ITEMS TABLE
 CREATE TABLE IF NOT EXISTS order_items (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     order_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
     product_name VARCHAR(200) NOT NULL,
@@ -118,20 +116,20 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 -- DELIVERY TRACKING TABLE
 CREATE TABLE IF NOT EXISTS delivery_tracking (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     order_id BIGINT NOT NULL,
     delivery_boy_id BIGINT NOT NULL,
     latitude DECIMAL(10,8),
     longitude DECIMAL(11,8),
     status VARCHAR(100),
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (delivery_boy_id) REFERENCES users(id)
 );
 
 -- OFFLINE BILLS TABLE
 CREATE TABLE IF NOT EXISTS offline_bills (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     bill_number VARCHAR(50),
     pdf_url VARCHAR(500),
     customer_name VARCHAR(100),
@@ -145,7 +143,7 @@ CREATE TABLE IF NOT EXISTS offline_bills (
 
 -- NOTIFICATIONS TABLE
 CREATE TABLE IF NOT EXISTS notifications (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     title VARCHAR(200) NOT NULL,
     body TEXT NOT NULL,
@@ -159,10 +157,11 @@ CREATE TABLE IF NOT EXISTS notifications (
 -- =============================================
 -- SEED DATA
 -- =============================================
-INSERT IGNORE INTO users (name, email, phone, password, role, is_active) VALUES
-('Admin User', 'admin@ecommerce.com', '9999999999', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN', TRUE);
+INSERT INTO users (name, email, phone, password, role, is_active) VALUES
+('Admin User', 'admin@ecommerce.com', '9999999999', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN', TRUE)
+ON CONFLICT (email) DO NOTHING;
 
-INSERT IGNORE INTO categories (name, emoji, sort_order) VALUES
+INSERT INTO categories (name, emoji, sort_order) VALUES
 ('Dairy & Bread', '🥛', 1),
 ('Fruits & Vegetables', '🥦', 2),
 ('Oil & Ghee', '🫙', 3),
@@ -175,13 +174,14 @@ INSERT IGNORE INTO categories (name, emoji, sort_order) VALUES
 ('Electronics', '📱', 10),
 ('Electric Items', '💡', 11),
 ('Snacks', '🍿', 12),
-('Beverages', '🥤', 13);
+('Beverages', '🥤', 13)
+ON CONFLICT DO NOTHING;
 
 -- =============================================
 -- SEED PRODUCTS (5 per category)
 -- =============================================
 -- Dairy & Bread (cat 1)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (1, 'Amul Full Cream Milk', 'Fresh full cream milk', 28.00, 30.00, 6.67, '500ml', 100, TRUE),
 (1, 'Amul Toned Milk', 'Low fat toned milk', 24.00, 26.00, 7.69, '500ml', 80, TRUE),
 (1, 'Britannia Bread', 'Soft sandwich bread', 40.00, 45.00, 11.11, '400g', 50, TRUE),
@@ -189,10 +189,11 @@ INSERT IGNORE INTO products (category_id, name, description, price, mrp, discoun
 (1, 'Amul Paneer', 'Fresh cottage cheese', 85.00, 90.00, 5.56, '200g', 40, TRUE),
 (1, 'Curd / Dahi', 'Fresh set curd', 30.00, 32.00, 6.25, '400g', 70, TRUE),
 (1, 'Amul Cheese Slices', 'Processed cheese slices', 95.00, 105.00, 9.52, '200g (10 slices)', 35, TRUE),
-(1, 'Brown Bread', 'Whole wheat brown bread', 45.00, 50.00, 10.00, '400g', 45, TRUE);
+(1, 'Brown Bread', 'Whole wheat brown bread', 45.00, 50.00, 10.00, '400g', 45, TRUE)
+ON CONFLICT DO NOTHING;
 
 -- Fruits & Vegetables (cat 2)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (2, 'Tomato', 'Fresh red tomatoes', 30.00, 35.00, 14.29, '500g', 100, TRUE),
 (2, 'Onion', 'Fresh onions', 25.00, 30.00, 16.67, '500g', 120, TRUE),
 (2, 'Potato', 'Fresh potatoes', 20.00, 25.00, 20.00, '500g', 150, TRUE),
@@ -203,7 +204,7 @@ INSERT IGNORE INTO products (category_id, name, description, price, mrp, discoun
 (2, 'Capsicum', 'Fresh green capsicum', 40.00, 45.00, 11.11, '250g', 45, TRUE);
 
 -- Oil & Ghee (cat 3)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (3, 'Fortune Sunflower Oil', 'Refined sunflower oil', 140.00, 155.00, 9.68, '1 Litre', 60, TRUE),
 (3, 'Amul Pure Ghee', 'Pure cow ghee', 550.00, 600.00, 8.33, '500ml', 30, TRUE),
 (3, 'Saffola Gold Oil', 'Blended edible oil', 160.00, 175.00, 8.57, '1 Litre', 50, TRUE),
@@ -212,7 +213,7 @@ INSERT IGNORE INTO products (category_id, name, description, price, mrp, discoun
 (3, 'Olive Oil', 'Extra virgin olive oil', 450.00, 500.00, 10.00, '500ml', 20, TRUE);
 
 -- Daily Use (cat 4)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (4, 'Surf Excel Detergent', 'Washing powder', 110.00, 120.00, 8.33, '1 kg', 50, TRUE),
 (4, 'Vim Dishwash Bar', 'Dish cleaning bar', 30.00, 35.00, 14.29, '200g', 80, TRUE),
 (4, 'Dettol Soap', 'Antibacterial soap', 45.00, 50.00, 10.00, '75g x 3', 70, TRUE),
@@ -222,7 +223,7 @@ INSERT IGNORE INTO products (category_id, name, description, price, mrp, discoun
 (4, 'Tissue Paper Roll', 'Soft tissue rolls', 150.00, 170.00, 11.76, 'Pack of 6', 45, TRUE);
 
 -- Cosmetics (cat 5)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (5, 'Nivea Face Wash', 'Deep clean face wash', 150.00, 175.00, 14.29, '100ml', 40, TRUE),
 (5, 'Lakme Lipstick', 'Long lasting lip color', 250.00, 299.00, 16.39, '3.6g', 30, TRUE),
 (5, 'Dove Shampoo', 'Moisturising shampoo', 180.00, 200.00, 10.00, '180ml', 50, TRUE),
@@ -232,7 +233,7 @@ INSERT IGNORE INTO products (category_id, name, description, price, mrp, discoun
 (5, 'Vaseline Body Lotion', 'Deep moisture lotion', 140.00, 160.00, 12.50, '200ml', 55, TRUE);
 
 -- Snacks (cat 12)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (12, 'Lays Classic Chips', 'Salted potato chips', 20.00, 20.00, 0.00, '26g', 100, TRUE),
 (12, 'Kurkure Masala', 'Spicy corn puffs', 20.00, 20.00, 0.00, '90g', 90, TRUE),
 (12, 'Parle-G Biscuits', 'Glucose biscuits', 10.00, 10.00, 0.00, '100g', 150, TRUE),
@@ -242,7 +243,7 @@ INSERT IGNORE INTO products (category_id, name, description, price, mrp, discoun
 (12, 'Dark Fantasy Biscuits', 'Choco filled biscuits', 30.00, 35.00, 14.29, '75g', 70, TRUE);
 
 -- Beverages (cat 13)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (13, 'Coca Cola', 'Refreshing cola drink', 40.00, 45.00, 11.11, '750ml', 80, TRUE),
 (13, 'Tropicana Orange Juice', 'Fresh orange juice', 90.00, 99.00, 9.09, '1 Litre', 50, TRUE),
 (13, 'Red Bull Energy Drink', 'Energy drink', 115.00, 125.00, 8.00, '250ml', 40, TRUE),
@@ -252,7 +253,7 @@ INSERT IGNORE INTO products (category_id, name, description, price, mrp, discoun
 (13, 'Horlicks', 'Health drink powder', 280.00, 310.00, 9.68, '500g', 30, TRUE);
 
 -- Ice Cream (cat 7)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (7, 'Amul Vanilla Ice Cream', 'Classic vanilla flavour', 80.00, 90.00, 11.11, '500ml', 30, TRUE),
 (7, 'Kwality Walls Cornetto', 'Chocolate cone ice cream', 40.00, 45.00, 11.11, '1 pc', 50, TRUE),
 (7, 'Amul Chocolate Ice Cream', 'Rich chocolate flavour', 90.00, 100.00, 10.00, '500ml', 25, TRUE),
@@ -260,7 +261,7 @@ INSERT IGNORE INTO products (category_id, name, description, price, mrp, discoun
 (7, 'Kulfi Stick', 'Traditional Indian kulfi', 30.00, 35.00, 14.29, '1 pc', 60, TRUE);
 
 -- Electronics (cat 10)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (10, 'USB Type-C Cable', 'Fast charging cable', 199.00, 249.00, 20.08, '1m', 60, TRUE),
 (10, 'Earphones', 'Wired stereo earphones', 299.00, 399.00, 25.06, '1 pc', 40, TRUE),
 (10, 'Phone Stand', 'Adjustable mobile stand', 149.00, 199.00, 25.13, '1 pc', 50, TRUE),
@@ -268,7 +269,7 @@ INSERT IGNORE INTO products (category_id, name, description, price, mrp, discoun
 (10, 'Power Bank 10000mAh', 'Portable charger', 799.00, 999.00, 20.02, '1 pc', 20, TRUE);
 
 -- Stationery (cat 6)
-INSERT IGNORE INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
+INSERT INTO products (category_id, name, description, price, mrp, discount_percent, unit, stock_quantity, is_active) VALUES
 (6, 'Classmate Notebook', 'Single line notebook', 40.00, 45.00, 11.11, '172 pages', 80, TRUE),
 (6, 'Reynolds Pen Pack', 'Ball point pens', 30.00, 35.00, 14.29, 'Pack of 5', 100, TRUE),
 (6, 'Stapler', 'Mini stapler with pins', 80.00, 95.00, 15.79, '1 pc', 40, TRUE),

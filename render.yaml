@@ -1,3 +1,14 @@
+databases:
+  # E-commerce PostgreSQL Database
+  - name: ecommerce-db
+    plan: free
+    user: ecommerce_user
+
+  # BillBook PostgreSQL Database
+  - name: billbook-db
+    plan: free
+    user: billbook_user
+
 services:
   # Backend - E-commerce API
   - type: web
@@ -8,11 +19,17 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        sync: false
+        fromDatabase:
+          name: ecommerce-db
+          property: connectionString
       - key: SPRING_DATASOURCE_USERNAME
-        sync: false
+        fromDatabase:
+          name: ecommerce-db
+          property: user
       - key: SPRING_DATASOURCE_PASSWORD
-        sync: false
+        fromDatabase:
+          name: ecommerce-db
+          property: password
       - key: PORT
         value: 8080
       - key: APP_BASE_URL
@@ -33,11 +50,17 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        sync: false
+        fromDatabase:
+          name: billbook-db
+          property: connectionString
       - key: SPRING_DATASOURCE_USERNAME
-        sync: false
+        fromDatabase:
+          name: billbook-db
+          property: user
       - key: SPRING_DATASOURCE_PASSWORD
-        sync: false
+        fromDatabase:
+          name: billbook-db
+          property: password
       - key: PORT
         value: 9999
       - key: JWT_SECRET
