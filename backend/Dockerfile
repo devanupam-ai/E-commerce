@@ -10,6 +10,9 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
+# Create uploads directory
+RUN mkdir -p /app/uploads/products
+
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

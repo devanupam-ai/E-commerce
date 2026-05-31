@@ -8,6 +8,7 @@ E:\Demo_Ecommerce\backend\src\main\java\com\ecommerce\EcommerceApplication.java
 E:\Demo_Ecommerce\backend\src\main\java\com\ecommerce\controller\CouponController.java
 E:\Demo_Ecommerce\backend\src\main\java\com\ecommerce\model\LoyaltyReward.java
 E:\Demo_Ecommerce\backend\src\main\java\com\ecommerce\controller\CartController.java
+E:\Demo_Ecommerce\backend\src\main\java\com\ecommerce\controller\CustomerFeatureController.java
 E:\Demo_Ecommerce\backend\src\main\java\com\ecommerce\dto\AuthDTO.java
 E:\Demo_Ecommerce\backend\src\main\java\com\ecommerce\config\SecurityConfig.java
 E:\Demo_Ecommerce\backend\src\main\java\com\ecommerce\service\LoyaltyService.java

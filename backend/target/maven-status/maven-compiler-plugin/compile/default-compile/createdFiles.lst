@@ -50,6 +50,7 @@ com\ecommerce\controller\CartController.class
 com\ecommerce\repository\LoyaltyRewardRepository.class
 com\ecommerce\repository\NotificationRepository.class
 com\ecommerce\model\ProductImage.class
+com\ecommerce\controller\CustomerFeatureController.class
 com\ecommerce\model\Product.class
 com\ecommerce\model\OfflineBill.class
 com\ecommerce\model\Order$PaymentStatus.class
