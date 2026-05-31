@@ -1,0 +1,56 @@
+services:
+  # Backend - E-commerce API
+  - type: web
+    name: ecommerce-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: SERVER_PORT
+        value: 8080
+
+  # BillBook Backend
+  - type: web
+    name: billbook-backend
+    runtime: docker
+    dockerfilePath: ./billbook-backend/Dockerfile
+    dockerContext: ./billbook-backend
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: SERVER_PORT
+        value: 8081
+
+  # AdminWeb - React Frontend
+  - type: web
+    name: admin-web
+    runtime: node
+    buildCommand: cd AdminWeb && npm install && npm run build
+    startCommand: cd AdminWeb && npx serve -s dist -l 3000
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+
+  # BillBook Frontend
+  - type: web
+    name: billbook-frontend
+    runtime: node
+    buildCommand: cd BillBook/frontend && npm install && npm run build
+    startCommand: cd BillBook/frontend && npx serve -s dist -l 3001
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        sync: false
